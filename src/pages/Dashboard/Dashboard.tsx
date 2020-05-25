@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import io from 'socket.io-client';
 
 import api from '../../services/api';
@@ -27,9 +27,11 @@ interface Event {
 }
 
 const Dashboard: React.FC = () => {
-  const [activeEvent, setActiveEvent] = useState<Event>({} as Event);
+  const [activeEvent, setActiveEvent] = useState<Event | null>(null);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [total, setTotal] = useState<number>(0);
+
+  const eventLoaded = useMemo(() => activeEvent, [activeEvent]);
 
   const fetchDashboardData = useCallback(async () => {
     const { data: event } = await api.get<Event>('/events/active');
@@ -47,18 +49,19 @@ const Dashboard: React.FC = () => {
   }, [fetchDashboardData]);
 
   useEffect(() => {
-    const socket = io('http://localhost:3333', { transports: ['websocket'] });
-
-    socket.on(`total_donations:${activeEvent.id}`, (data: number) => {
-      setTotal(data);
-    });
-  }, [activeEvent.id]);
+    if (eventLoaded) {
+      const socket = io('http://localhost:3333', { transports: ['websocket'] });
+      socket.on(`total_donations:${eventLoaded.id}`, (data: number) => {
+        setTotal(data);
+      });
+    }
+  }, [activeEvent, eventLoaded]);
 
   return (
     <Container>
       <EventInfo>
-        <h1>{activeEvent.name}</h1>
-        <span>{activeEvent.description}</span>
+        <h1>{activeEvent?.name}</h1>
+        <span>{activeEvent?.description}</span>
       </EventInfo>
       <Boxes>
         <SimpleBox title="TOTAL" color="primary">
