@@ -12,6 +12,8 @@ export const AnimatedDiv = styled(animated.div)`
 `;
 
 export const Container = styled.div<DonationStatus>`
+  transition: border 0.2s ease-in-out;
+
   border: 2px solid
     ${({ reviewed }): string => (reviewed ? '#2e656a' : '#c53030')};
 
@@ -46,6 +48,8 @@ export const DonationValue = styled.div`
 `;
 
 export const StatusBar = styled.div<DonationStatus>`
+  transition: background-color 0.2s ease-in-out;
+
   display: flex;
   align-items: center;
   justify-content: flex-end;

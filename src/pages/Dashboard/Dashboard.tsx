@@ -1,8 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { useTransition } from 'react-spring';
+import { useDispatch, useSelector } from 'react-redux';
+
+import Donation from 'models/Donation';
 
 import { useSocket } from 'modules/SocketManager';
-import api from 'services/api';
+
+import RootState from 'store/RootState';
+import { actions as donationsActions } from 'store/ducks/donations';
+import { actions as eventsActions } from 'store/ducks/events';
+import { actions as dashboardActionsSaga } from 'store/sagas/dashboard';
 
 import DonationBox from 'components/DonationBox';
 import SimpleBox from 'components/SimpleBox';
@@ -10,27 +17,12 @@ import AnimatedValue from 'components/AnimatedValue';
 
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
 
-interface Donation {
-  id: number;
-  amount: number;
-  from: string;
-  message: string;
-  created_at: string;
-  reviewer?: {
-    name: string;
-  };
-}
-
-interface Event {
-  id: string;
-  name: string;
-  description: string;
-}
-
 const Dashboard: React.FC = () => {
-  const [activeEvent, setActiveEvent] = useState<Event | null>(null);
-  const [donations, setDonations] = useState<Donation[]>([]);
-  const [total, setTotal] = useState<number>(0);
+  const dispatch = useDispatch();
+
+  const donations = useSelector((state: RootState) => state.donations);
+  const event = useSelector((state: RootState) => state.events.activeEvent);
+  const total = useSelector((state: RootState) => state.events.total);
 
   const { socket } = useSocket();
 
@@ -40,40 +32,32 @@ const Dashboard: React.FC = () => {
     {
       from: { opacity: 0 },
       enter: { opacity: 1 },
-      leave: { opacity: 0 },
     },
   );
 
-  const fetchDashboardData = useCallback(async () => {
-    const { data: event } = await api.get<Event>('/events/active');
-    setActiveEvent(event);
-    api.get<Donation[]>('/donations').then(({ data }) => {
-      setDonations(data);
-    });
-    api.get<{ total: number }>(`/events/${event.id}/total`).then(({ data }) => {
-      setTotal(data.total);
-    });
-  }, []);
+  useEffect(() => {
+    dispatch(dashboardActionsSaga.getDashboard());
+  }, [dispatch]);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [fetchDashboardData]);
-
-  useEffect(() => {
-    socket.on(`total_donations:${activeEvent?.id}`, (data: number) => {
-      setTotal(data);
+    socket.on(`total_donations:${event?.id}`, (data: number) => {
+      dispatch(eventsActions.setTotalActiveEvent({ total: data }));
     });
 
-    socket.on(`new_donation:${activeEvent?.id}`, (data: Donation) => {
-      setDonations((oldDonations) => [data, ...oldDonations]);
+    socket.on(`new_donation:${event?.id}`, (data: Donation) => {
+      dispatch(donationsActions.addDonation({ donation: data }));
     });
-  }, [activeEvent, socket]);
+
+    socket.on(`new_reviewed_donation:${event?.id}`, (data: Donation) => {
+      dispatch(donationsActions.reviewDonation({ reviewedDonation: data }));
+    });
+  }, [dispatch, event, socket]);
 
   return (
     <Container>
       <EventInfo>
-        <h1>{activeEvent?.name}</h1>
-        <span>{activeEvent?.description}</span>
+        <h1>{event?.name}</h1>
+        <span>{event?.description}</span>
       </EventInfo>
       <Boxes>
         <SimpleBox title="TOTAL" color="primary">
