@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useTransition } from 'react-spring';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,6 +11,8 @@ import { actions as donationsActions } from 'store/ducks/donations';
 import { actions as eventsActions } from 'store/ducks/events';
 import { actions as dashboardActionsSaga } from 'store/sagas/dashboard';
 
+import api from 'services/api';
+
 import DonationBox from 'components/DonationBox';
 import SimpleBox from 'components/SimpleBox';
 import AnimatedValue from 'components/AnimatedValue';
@@ -20,11 +22,23 @@ import { Container, DonationsList, Boxes, EventInfo } from './styles';
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
 
-  const donations = useSelector((state: RootState) => state.donations);
-  const event = useSelector((state: RootState) => state.events.activeEvent);
-  const total = useSelector((state: RootState) => state.events.total);
+  const { donations, event, total } = useSelector((state: RootState) => ({
+    donations: state.donations,
+    event: state.events.activeEvent,
+    total: state.events.total,
+  }));
 
   const { socket } = useSocket();
+
+  const handleReview = useCallback(
+    async (donationId) => {
+      const { data: donation } = await api.patch<Donation>(
+        `/donations/${donationId}/review`,
+      );
+      dispatch(donationsActions.reviewDonation({ reviewedDonation: donation }));
+    },
+    [dispatch],
+  );
 
   const donationsWithTransition = useTransition(
     donations,
@@ -80,6 +94,7 @@ const Dashboard: React.FC = () => {
             amount={item.amount}
             reviewer={item.reviewer?.name}
             createdAt={item.created_at}
+            onReview={() => handleReview(item.id)}
           />
         ))}
       </DonationsList>

@@ -19,6 +19,7 @@ interface DonationBoxProps {
   amount: number;
   reviewer?: string;
   createdAt: string;
+  onReview(): void;
   style: Record<string, unknown>;
 }
 
@@ -29,6 +30,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
   reviewer,
   createdAt,
   style,
+  onReview,
 }) => {
   const tz = useMemo(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -55,7 +57,11 @@ const DonationBox: React.FC<DonationBoxProps> = ({
           <DonationValue>R$ {amount}</DonationValue>
         </DonationContainer>
         <StatusBar reviewed={!!reviewer}>
-          {!reviewer && <button type="button">Click to Review</button>}
+          {!reviewer && (
+            <button type="button" onClick={onReview}>
+              Click to Review
+            </button>
+          )}
           {reviewer && (
             <>
               <FaCheckCircle /> Reviewed by {reviewer}
