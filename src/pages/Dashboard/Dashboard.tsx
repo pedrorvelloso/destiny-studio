@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import api from '../../services/api';
+import { useSocket } from 'modules/SocketManager';
+import api from 'services/api';
 
-import DonationBox from '../../components/DonationBox';
-import SimpleBox from '../../components/SimpleBox';
-import AnimatedValue from '../../components/AnimatedValue';
+import DonationBox from 'components/DonationBox';
+import SimpleBox from 'components/SimpleBox';
+import AnimatedValue from 'components/AnimatedValue';
 
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
-import { useSocket } from '../../modules/SocketManager';
 
 interface Donation {
   id: number;
@@ -68,7 +68,10 @@ const Dashboard: React.FC = () => {
           R$ <AnimatedValue value={total} formatValue={(n) => n.toFixed(2)} />
         </SimpleBox>
         <SimpleBox title="NUM. DONATIONS" color="info">
-          {donations.length}
+          <AnimatedValue
+            value={donations.length}
+            formatValue={(n) => n.toFixed(0)}
+          />
         </SimpleBox>
       </Boxes>
       <DonationsList>
