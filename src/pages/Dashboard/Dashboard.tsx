@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import io from 'socket.io-client';
-
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../../services/api';
 
 import DonationBox from '../../components/DonationBox';
@@ -8,6 +6,7 @@ import SimpleBox from '../../components/SimpleBox';
 import AnimatedValue from '../../components/AnimatedValue';
 
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
+import { useSocket } from '../../modules/SocketManager';
 
 interface Donation {
   id: number;
@@ -31,14 +30,7 @@ const Dashboard: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [total, setTotal] = useState<number>(0);
 
-  const socket = useMemo(
-    () =>
-      io('http://localhost:3333', {
-        transports: ['websocket'],
-        autoConnect: false,
-      }),
-    [],
-  );
+  const { socket } = useSocket();
 
   const fetchDashboardData = useCallback(async () => {
     const { data: event } = await api.get<Event>('/events/active');
@@ -54,10 +46,6 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
-
-  useEffect(() => {
-    if (activeEvent) socket.connect();
-  }, [activeEvent, socket]);
 
   useEffect(() => {
     socket.on(`total_donations:${activeEvent?.id}`, (data: number) => {
