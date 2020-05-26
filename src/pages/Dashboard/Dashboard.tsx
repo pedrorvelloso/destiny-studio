@@ -31,7 +31,14 @@ const Dashboard: React.FC = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [total, setTotal] = useState<number>(0);
 
-  const eventLoaded = useMemo(() => activeEvent, [activeEvent]);
+  const socket = useMemo(
+    () =>
+      io('http://localhost:3333', {
+        transports: ['websocket'],
+        autoConnect: false,
+      }),
+    [],
+  );
 
   const fetchDashboardData = useCallback(async () => {
     const { data: event } = await api.get<Event>('/events/active');
@@ -49,13 +56,18 @@ const Dashboard: React.FC = () => {
   }, [fetchDashboardData]);
 
   useEffect(() => {
-    if (eventLoaded) {
-      const socket = io('http://localhost:3333', { transports: ['websocket'] });
-      socket.on(`total_donations:${eventLoaded.id}`, (data: number) => {
-        setTotal(data);
-      });
-    }
-  }, [activeEvent, eventLoaded]);
+    if (activeEvent) socket.connect();
+  }, [activeEvent, socket]);
+
+  useEffect(() => {
+    socket.on(`total_donations:${activeEvent?.id}`, (data: number) => {
+      setTotal(data);
+    });
+
+    socket.on(`new_donation:${activeEvent?.id}`, (data: Donation) => {
+      setDonations((oldDonations) => [data, ...oldDonations]);
+    });
+  }, [activeEvent, socket]);
 
   return (
     <Container>
