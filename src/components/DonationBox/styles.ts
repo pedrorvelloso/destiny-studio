@@ -1,8 +1,15 @@
 import styled from 'styled-components';
+import { animated } from 'react-spring';
 
 interface DonationStatus {
   reviewed: boolean;
 }
+
+export const AnimatedDiv = styled(animated.div)`
+  & + div {
+    margin-top: 8px;
+  }
+`;
 
 export const Container = styled.div<DonationStatus>`
   border: 2px solid
@@ -11,10 +18,6 @@ export const Container = styled.div<DonationStatus>`
   border-radius: 5px;
 
   user-select: none;
-
-  & + div {
-    margin-top: 8px;
-  }
 `;
 
 export const DonationContainer = styled.div`

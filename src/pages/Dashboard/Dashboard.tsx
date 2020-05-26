@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useTransition } from 'react-spring';
+
 import { useSocket } from 'modules/SocketManager';
 import api from 'services/api';
 
@@ -31,6 +33,16 @@ const Dashboard: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
 
   const { socket } = useSocket();
+
+  const donationsWithTransition = useTransition(
+    donations,
+    (donation) => donation.id,
+    {
+      from: { opacity: 0 },
+      enter: { opacity: 1 },
+      leave: { opacity: 0 },
+    },
+  );
 
   const fetchDashboardData = useCallback(async () => {
     const { data: event } = await api.get<Event>('/events/active');
@@ -75,14 +87,15 @@ const Dashboard: React.FC = () => {
         </SimpleBox>
       </Boxes>
       <DonationsList>
-        {donations.map((donation) => (
+        {donationsWithTransition.map(({ item, key, props }) => (
           <DonationBox
-            key={donation.id}
-            from={donation.from}
-            message={donation.message}
-            amount={donation.amount}
-            reviewer={donation.reviewer?.name}
-            createdAt={donation.created_at}
+            style={props}
+            key={key}
+            from={item.from}
+            message={item.message}
+            amount={item.amount}
+            reviewer={item.reviewer?.name}
+            createdAt={item.created_at}
           />
         ))}
       </DonationsList>

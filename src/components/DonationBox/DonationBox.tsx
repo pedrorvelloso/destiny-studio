@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { FaCheckCircle } from 'react-icons/fa';
+
 import { formatDistance } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
@@ -9,6 +10,7 @@ import {
   StatusBar,
   Donation,
   DonationValue,
+  AnimatedDiv,
 } from './styles';
 
 interface DonationBoxProps {
@@ -17,6 +19,7 @@ interface DonationBoxProps {
   amount: number;
   reviewer?: string;
   createdAt: string;
+  style: Record<string, unknown>;
 }
 
 const DonationBox: React.FC<DonationBoxProps> = ({
@@ -25,6 +28,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
   amount,
   reviewer,
   createdAt,
+  style,
 }) => {
   const tz = useMemo(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -39,25 +43,27 @@ const DonationBox: React.FC<DonationBoxProps> = ({
   );
 
   return (
-    <Container reviewed={!!reviewer}>
-      <DonationContainer>
-        <Donation>
-          <h5>
-            {from} - {formattedDate}
-          </h5>
-          <p>{message}</p>
-        </Donation>
-        <DonationValue>R$ {amount}</DonationValue>
-      </DonationContainer>
-      <StatusBar reviewed={!!reviewer}>
-        {!reviewer && <button type="button">Click to Review</button>}
-        {reviewer && (
-          <>
-            <FaCheckCircle /> Reviewed by {reviewer}
-          </>
-        )}
-      </StatusBar>
-    </Container>
+    <AnimatedDiv style={style}>
+      <Container reviewed={!!reviewer}>
+        <DonationContainer>
+          <Donation>
+            <h5>
+              {from} - {formattedDate}
+            </h5>
+            <p>{message}</p>
+          </Donation>
+          <DonationValue>R$ {amount}</DonationValue>
+        </DonationContainer>
+        <StatusBar reviewed={!!reviewer}>
+          {!reviewer && <button type="button">Click to Review</button>}
+          {reviewer && (
+            <>
+              <FaCheckCircle /> Reviewed by {reviewer}
+            </>
+          )}
+        </StatusBar>
+      </Container>
+    </AnimatedDiv>
   );
 };
 
