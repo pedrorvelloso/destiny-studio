@@ -11,15 +11,16 @@ import api from 'services/api';
 import DonationBox from 'components/DonationBox';
 import SimpleBox from 'components/SimpleBox';
 import AnimatedValue from 'components/AnimatedValue';
+import FullScreenLoading from 'components/FullScreenLoading';
 
 import { initialState, reducer } from './state';
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
 
 const Dashboard: React.FC = () => {
-  const [{ donations, total, activeEvent }, dispatch] = useReducer(
-    reducer,
-    initialState,
-  );
+  const [
+    { donations, total, activeEvent, loadingActiveEvent },
+    dispatch,
+  ] = useReducer(reducer, initialState);
   const { socket } = useSocket();
 
   const handleReview = useCallback(async (donationId) => {
@@ -68,6 +69,8 @@ const Dashboard: React.FC = () => {
       dispatch({ type: 'reviewDonation', donation: data });
     });
   }, [activeEvent, socket]);
+
+  if (loadingActiveEvent && !activeEvent) return <FullScreenLoading />;
 
   return (
     <Container>
