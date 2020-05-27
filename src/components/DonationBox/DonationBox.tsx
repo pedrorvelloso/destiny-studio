@@ -20,6 +20,7 @@ interface DonationBoxProps {
   reviewer?: string;
   createdAt: string;
   onReview(): void;
+  canReview: boolean;
   style: Record<string, unknown>;
 }
 
@@ -29,6 +30,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
   amount,
   reviewer,
   createdAt,
+  canReview,
   style,
   onReview,
 }) => {
@@ -58,9 +60,15 @@ const DonationBox: React.FC<DonationBoxProps> = ({
         </DonationContainer>
         <StatusBar reviewed={!!reviewer}>
           {!reviewer && (
-            <button type="button" onClick={onReview}>
-              Click to Review
-            </button>
+            <>
+              {canReview ? (
+                <button type="button" onClick={onReview}>
+                  Click to Review
+                </button>
+              ) : (
+                <p>Awaiting reviewer</p>
+              )}
+            </>
           )}
           {reviewer && (
             <>

@@ -7,6 +7,7 @@ import Event from 'models/Event';
 import { useSocket } from 'modules/SocketManager';
 
 import api from 'services/api';
+import { useAuth } from 'modules/AuthManager';
 
 import DonationBox from 'components/DonationBox';
 import SimpleBox from 'components/SimpleBox';
@@ -22,6 +23,7 @@ const Dashboard: React.FC = () => {
     dispatch,
   ] = useReducer(reducer, initialState);
   const { socket } = useSocket();
+  const { user } = useAuth();
 
   const handleReview = useCallback(async (donationId) => {
     const { data: donation } = await api.patch<Donation>(
@@ -100,6 +102,7 @@ const Dashboard: React.FC = () => {
             reviewer={item.reviewer?.name}
             createdAt={item.created_at}
             onReview={() => handleReview(item.id)}
+            canReview={!!user}
           />
         ))}
       </DonationsList>

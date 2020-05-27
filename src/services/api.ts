@@ -1,9 +1,7 @@
 import axios from 'axios';
+import { STORAGE } from 'utils/localStorage';
 
-/**
- * @TODO create login page
- */
-const JWT = localStorage.getItem('jwt');
+const JWT = localStorage.getItem(STORAGE.JWT);
 
 const auth = JWT ? { Authorization: `Bearer ${JWT}` } : {};
 
