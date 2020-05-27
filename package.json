@@ -16,12 +16,14 @@
     "polished": "^3.6.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-hook-form": "^5.7.2",
     "react-icons": "^3.10.0",
     "react-scripts": "3.4.1",
     "react-spring": "^8.0.27",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.0",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "yup": "^0.29.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -44,6 +46,7 @@
   "devDependencies": {
     "@types/socket.io-client": "^1.4.33",
     "@types/styled-components": "^5.1.0",
+    "@types/yup": "^0.29.0",
     "@typescript-eslint/eslint-plugin": "^3.0.0",
     "@typescript-eslint/parser": "^3.0.0",
     "eslint": "^6.8.0",

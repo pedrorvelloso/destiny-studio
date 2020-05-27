@@ -1,13 +1,14 @@
 import React from 'react';
-import GlobalStyle from './styles/global';
-import Dashboard from './pages/Dashboard';
+import Login from 'pages/Login';
+// import Dashboard from './pages/Dashboard';
 
+import GlobalStyle from './styles/global';
 import AppProviders from './modules';
 
 const App: React.FC = () => {
   return (
     <AppProviders>
-      <Dashboard />
+      <Login />
       <GlobalStyle />
     </AppProviders>
   );
