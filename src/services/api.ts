@@ -5,10 +5,12 @@ import axios from 'axios';
  */
 const JWT = localStorage.getItem('jwt');
 
+const auth = JWT ? { Authorization: `Bearer ${JWT}` } : {};
+
 const api = axios.create({
   baseURL: 'http://localhost:3333',
   headers: {
-    Authorization: `Bearer ${JWT}`,
+    ...auth,
   },
 });
 

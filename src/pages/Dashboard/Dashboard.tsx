@@ -1,15 +1,10 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useReducer } from 'react';
 import { useTransition } from 'react-spring';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Donation from 'models/Donation';
+import Event from 'models/Event';
 
 import { useSocket } from 'modules/SocketManager';
-
-import RootState from 'store/RootState';
-import { actions as donationsActions } from 'store/ducks/donations';
-import { actions as eventsActions } from 'store/ducks/events';
-import { actions as dashboardActionsSaga } from 'store/sagas/dashboard';
 
 import api from 'services/api';
 
@@ -17,28 +12,35 @@ import DonationBox from 'components/DonationBox';
 import SimpleBox from 'components/SimpleBox';
 import AnimatedValue from 'components/AnimatedValue';
 
+import { initialState, reducer } from './state';
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
 
 const Dashboard: React.FC = () => {
-  const dispatch = useDispatch();
-
-  const { donations, event, total } = useSelector((state: RootState) => ({
-    donations: state.donations,
-    event: state.events.activeEvent,
-    total: state.events.total,
-  }));
-
+  const [{ donations, total, activeEvent }, dispatch] = useReducer(
+    reducer,
+    initialState,
+  );
   const { socket } = useSocket();
 
-  const handleReview = useCallback(
-    async (donationId) => {
-      const { data: donation } = await api.patch<Donation>(
-        `/donations/${donationId}/review`,
-      );
-      dispatch(donationsActions.reviewDonation({ reviewedDonation: donation }));
-    },
-    [dispatch],
-  );
+  const handleReview = useCallback(async (donationId) => {
+    const { data: donation } = await api.patch<Donation>(
+      `/donations/${donationId}/review`,
+    );
+    dispatch({ type: 'reviewDonation', donation });
+  }, []);
+
+  const fetchDashboard = useCallback(async () => {
+    const { data: event } = await api.get<Event>('/events/active');
+    dispatch({ type: 'activeEvent', event });
+
+    api.get<{ total: number }>(`/events/${event.id}/total`).then(({ data }) => {
+      dispatch({ type: 'total', total: data.total });
+    });
+
+    api.get<Donation[]>('/donations').then(({ data }) => {
+      dispatch({ type: 'donations', donations: data });
+    });
+  }, []);
 
   const donationsWithTransition = useTransition(
     donations,
@@ -50,28 +52,28 @@ const Dashboard: React.FC = () => {
   );
 
   useEffect(() => {
-    dispatch(dashboardActionsSaga.getDashboard());
-  }, [dispatch]);
+    fetchDashboard();
+  }, [fetchDashboard]);
 
   useEffect(() => {
-    socket.on(`total_donations:${event?.id}`, (data: number) => {
-      dispatch(eventsActions.setTotalActiveEvent({ total: data }));
+    socket.on(`total_donations:${activeEvent?.id}`, (data: number) => {
+      dispatch({ type: 'total', total: data });
     });
 
-    socket.on(`new_donation:${event?.id}`, (data: Donation) => {
-      dispatch(donationsActions.addDonation({ donation: data }));
+    socket.on(`new_donation:${activeEvent?.id}`, (data: Donation) => {
+      dispatch({ type: 'addDonation', donation: data });
     });
 
-    socket.on(`new_reviewed_donation:${event?.id}`, (data: Donation) => {
-      dispatch(donationsActions.reviewDonation({ reviewedDonation: data }));
+    socket.on(`new_reviewed_donation:${activeEvent?.id}`, (data: Donation) => {
+      dispatch({ type: 'reviewDonation', donation: data });
     });
-  }, [dispatch, event, socket]);
+  }, [activeEvent, socket]);
 
   return (
     <Container>
       <EventInfo>
-        <h1>{event?.name}</h1>
-        <span>{event?.description}</span>
+        <h1>{activeEvent?.name}</h1>
+        <span>{activeEvent?.description}</span>
       </EventInfo>
       <Boxes>
         <SimpleBox title="TOTAL" color="primary">
