@@ -1,9 +1,8 @@
 {
-  "name": "destiny-web",
+  "name": "destiny-studio",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@reduxjs/toolkit": "^1.3.6",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -18,11 +17,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.10.0",
-    "react-redux": "^7.2.0",
     "react-scripts": "3.4.1",
     "react-spring": "^8.0.27",
-    "redux": "^4.0.5",
-    "redux-saga": "^1.1.3",
     "socket.io-client": "^2.3.0",
     "styled-components": "^5.1.0",
     "typescript": "~3.7.2"
@@ -46,7 +42,6 @@
     ]
   },
   "devDependencies": {
-    "@types/react-redux": "^7.1.9",
     "@types/socket.io-client": "^1.4.33",
     "@types/styled-components": "^5.1.0",
     "@typescript-eslint/eslint-plugin": "^3.0.0",
