@@ -29,7 +29,7 @@ export const AnimationContainer = styled.div`
   animation: ${appearFromLeft} 1s;
 
   width: 100%;
-  max-width: 500px;
+  max-width: 650px;
   padding: 16px;
 
   form {

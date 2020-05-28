@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 import { AiOutlineMail, AiOutlineLock } from 'react-icons/ai';
 import * as yup from 'yup';
@@ -27,11 +27,9 @@ const Login: React.FC = () => {
     validationSchema: schema,
   });
   const { signIn, user } = useAuth();
-  const history = useHistory();
 
   const onSubmit = async ({ email, password }: FormData): Promise<void> => {
     await signIn({ email, password });
-    history.push('/');
   };
 
   if (user) return <Redirect to="/" />;
@@ -48,6 +46,7 @@ const Login: React.FC = () => {
             placeholder="E-mail"
             icon={AiOutlineMail}
             autoComplete="off"
+            autoFocus
             inputError={errors.email?.message as string}
           />
           <Input
