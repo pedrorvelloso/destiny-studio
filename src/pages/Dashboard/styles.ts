@@ -30,4 +30,11 @@ export const Boxes = styled.div`
 
 export const EventInfo = styled.div`
   margin-bottom: 22px;
+
+  h1 {
+    span {
+      margin-left: 8px;
+      font-size: 12px;
+    }
+  }
 `;

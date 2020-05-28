@@ -13,6 +13,7 @@ import DonationBox from 'components/DonationBox';
 import SimpleBox from 'components/SimpleBox';
 import AnimatedValue from 'components/AnimatedValue';
 import FullScreenLoading from 'components/FullScreenLoading';
+import Header from 'components/Header';
 
 import { initialState, reducer } from './state';
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
@@ -76,8 +77,11 @@ const Dashboard: React.FC = () => {
 
   return (
     <Container>
+      <Header />
       <EventInfo>
-        <h1>{activeEvent?.name}</h1>
+        <h1>
+          {activeEvent?.name} <span>ID: {activeEvent?.id}</span>
+        </h1>
         <span>{activeEvent?.description}</span>
       </EventInfo>
       <Boxes>

@@ -39,6 +39,8 @@ export const Container = styled.div<ContainerProps>`
     flex: 1;
     border: 0;
 
+    font-family: 'Roboto Mono', monospace;
+
     &::placeholder {
       color: #bca6bf;
     }
