@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { FaCheckCircle } from 'react-icons/fa';
 
 import { formatDistance } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+
+import LoadingIndicator from 'components/LoadingIndicator';
 
 import {
   Container,
@@ -19,7 +21,7 @@ interface DonationBoxProps {
   amount: number;
   reviewer?: string;
   createdAt: string;
-  onReview(): void;
+  onReview(): void | Promise<void>;
   canReview: boolean;
   style: Record<string, unknown>;
 }
@@ -34,6 +36,8 @@ const DonationBox: React.FC<DonationBoxProps> = ({
   style,
   onReview,
 }) => {
+  const [isReviewing, setIsReviewing] = useState(false);
+
   const tz = useMemo(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone,
     [],
@@ -45,6 +49,11 @@ const DonationBox: React.FC<DonationBoxProps> = ({
       }),
     [createdAt, tz],
   );
+  const handleReview = useCallback(async () => {
+    setIsReviewing(true);
+    await onReview();
+    setIsReviewing(false);
+  }, [onReview]);
 
   return (
     <AnimatedDiv style={style}>
@@ -62,9 +71,14 @@ const DonationBox: React.FC<DonationBoxProps> = ({
           {!reviewer && (
             <>
               {canReview ? (
-                <button type="button" onClick={onReview}>
-                  Click to Review
-                </button>
+                <>
+                  {isReviewing && <LoadingIndicator />}
+                  {!isReviewing && (
+                    <button type="button" onClick={handleReview}>
+                      Click to Review
+                    </button>
+                  )}
+                </>
               ) : (
                 <p>Awaiting reviewer</p>
               )}

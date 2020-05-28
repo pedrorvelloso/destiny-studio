@@ -24,6 +24,6 @@ export const Container = styled.div`
   align-items: center;
 
   svg {
-    animation: ${rotate} 1s linear infinite;
+    animation: ${rotate} 1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
   }
 `;
