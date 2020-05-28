@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useReducer } from 'react';
 import { useTransition } from 'react-spring';
+import InfiniteScroll from 'react-infinite-scroller';
 
 import Donation from 'models/Donation';
 import Event from 'models/Event';
@@ -14,13 +15,14 @@ import SimpleBox from 'components/SimpleBox';
 import AnimatedValue from 'components/AnimatedValue';
 import FullScreenLoading from 'components/FullScreenLoading';
 import Header from 'components/Header';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 import { initialState, reducer } from './state';
 import { Container, DonationsList, Boxes, EventInfo } from './styles';
 
 const Dashboard: React.FC = () => {
   const [
-    { donations, total, activeEvent, loadingActiveEvent },
+    { donations, total, activeEvent, loadingActiveEvent, hasMore, cursor },
     dispatch,
   ] = useReducer(reducer, initialState);
   const { socket } = useSocket();
@@ -41,10 +43,36 @@ const Dashboard: React.FC = () => {
       dispatch({ type: 'total', total: data.total });
     });
 
-    api.get<Donation[]>('/donations').then(({ data }) => {
-      dispatch({ type: 'donations', donations: data });
-    });
+    api
+      .get(`/events/${event.id}/donations`, {
+        params: {
+          limit: 5,
+        },
+      })
+      .then(({ data }) => {
+        dispatch({
+          type: 'donations',
+          donations: data.donations,
+          hasMore: data.hasNextPage,
+          cursor: data.cursor,
+        });
+      });
   }, []);
+
+  const loadMore = useCallback(async () => {
+    const { data } = await api.get(`/events/${activeEvent?.id}/donations`, {
+      params: {
+        limit: 5,
+        cursor,
+      },
+    });
+    dispatch({
+      type: 'pagination',
+      donations: data.donations,
+      hasMore: data.hasNextPage,
+      cursor: data.cursor,
+    });
+  }, [activeEvent, cursor]);
 
   const donationsWithTransition = useTransition(
     donations,
@@ -95,21 +123,28 @@ const Dashboard: React.FC = () => {
           />
         </SimpleBox>
       </Boxes>
-      <DonationsList>
-        {donationsWithTransition.map(({ item, key, props }) => (
-          <DonationBox
-            style={props}
-            key={key}
-            from={item.from}
-            message={item.message}
-            amount={item.amount}
-            reviewer={item.reviewer?.name}
-            createdAt={item.created_at}
-            onReview={() => handleReview(item.id)}
-            canReview={!!user}
-          />
-        ))}
-      </DonationsList>
+      <InfiniteScroll
+        pageStart={0}
+        loadMore={loadMore}
+        hasMore={hasMore}
+        loader={<LoadingIndicator size={32} centered key={0} />}
+      >
+        <DonationsList>
+          {donationsWithTransition.map(({ item, key, props }) => (
+            <DonationBox
+              style={props}
+              key={key}
+              from={item.from}
+              message={item.message}
+              amount={item.amount}
+              reviewer={item.reviewer?.name}
+              createdAt={item.created_at}
+              onReview={() => handleReview(item.id)}
+              canReview={!!user}
+            />
+          ))}
+        </DonationsList>
+      </InfiniteScroll>
     </Container>
   );
 };

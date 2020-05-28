@@ -1,9 +1,23 @@
 import React from 'react';
 import { IconBaseProps } from 'react-icons';
 
-import { Loading } from './styles';
+import { Loading, Container } from './styles';
 
-const LoadingIndicator: React.FC<IconBaseProps> = ({ ...props }) => {
+interface LoadingIndicatorProps extends IconBaseProps {
+  centered?: boolean;
+}
+
+const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
+  centered,
+  ...props
+}) => {
+  if (centered)
+    return (
+      <Container>
+        <Loading {...props} />
+      </Container>
+    );
+
   return <Loading {...props} />;
 };
 
