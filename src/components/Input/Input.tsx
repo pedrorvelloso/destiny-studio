@@ -14,6 +14,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     | undefined;
   icon?: IconType;
   inputError?: string | null;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -21,15 +23,21 @@ const Input: React.FC<InputProps> = ({
   innerRef,
   icon: Icon,
   inputError,
+  onFocus,
+  onBlur,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleInputFocus = useCallback(() => setIsFocused(true), []);
+  const handleInputFocus = useCallback(() => {
+    setIsFocused(true);
+    if (onFocus) onFocus();
+  }, [onFocus]);
 
   const handleInputBlur = useCallback(() => {
     setIsFocused(false);
-  }, []);
+    if (onBlur) onBlur();
+  }, [onBlur]);
 
   return (
     <Container hasError={!!inputError} isFocused={isFocused}>

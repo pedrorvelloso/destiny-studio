@@ -13,6 +13,7 @@
     "axios": "^0.19.2",
     "date-fns": "^2.14.0",
     "date-fns-tz": "^1.0.10",
+    "lodash": "^4.17.15",
     "polished": "^3.6.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.155",
     "@types/react-infinite-scroller": "^1.2.1",
     "@types/react-router-dom": "^5.1.5",
     "@types/socket.io-client": "^1.4.33",

@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FaCheckCircle } from 'react-icons/fa';
 
 import { formatDistance } from 'date-fns';
@@ -16,6 +17,7 @@ import {
 } from './styles';
 
 interface DonationBoxProps {
+  id: number;
   from: string;
   message: string;
   amount: number;
@@ -27,6 +29,7 @@ interface DonationBoxProps {
 }
 
 const DonationBox: React.FC<DonationBoxProps> = ({
+  id,
   from,
   message,
   amount,
@@ -66,6 +69,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
             <p>{message}</p>
           </Donation>
           <DonationValue>R$ {amount}</DonationValue>
+          <Link to={`/allocate/${id}`} />
         </DonationContainer>
         <StatusBar reviewed={!!reviewer}>
           {!reviewer && (
