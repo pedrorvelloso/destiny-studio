@@ -115,10 +115,11 @@ const Home: React.FC = () => {
           R$ <AnimatedValue value={total} formatValue={(n) => n.toFixed(2)} />
         </SimpleBox>
         <SimpleBox title="NUM. DONATIONS" color="info">
-          <AnimatedValue
+          --
+          {/* <AnimatedValue
             value={donations.length}
             formatValue={(n) => n.toFixed(0)}
-          />
+          /> */}
         </SimpleBox>
       </Boxes>
       <InfiniteScroll

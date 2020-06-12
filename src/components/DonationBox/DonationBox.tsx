@@ -69,7 +69,12 @@ const DonationBox: React.FC<DonationBoxProps> = ({
             <p>{message}</p>
           </Donation>
           <DonationValue>R$ {amount}</DonationValue>
-          <Link to={`/allocate/${id}`} />
+          <Link
+            to={{
+              pathname: `/allocate/${id}`,
+              state: { amount },
+            }}
+          />
         </DonationContainer>
         <StatusBar reviewed={!!reviewer}>
           {!reviewer && (
