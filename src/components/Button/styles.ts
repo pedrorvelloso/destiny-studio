@@ -1,9 +1,13 @@
 import styled from 'styled-components';
-import { shade } from 'polished';
+import { shade, readableColor } from 'polished';
 
-export const Container = styled.button`
-  background: #a751b7;
-  color: #fffeee;
+interface ContainerProps {
+  color?: string;
+}
+
+export const Container = styled.button<ContainerProps>`
+  background: ${({ color }) => color || '#a751b7'};
+  color: ${({ color }) => readableColor(color || '#a751b7')};
   border-radius: 10px;
   border: 0;
 
@@ -27,6 +31,6 @@ export const Container = styled.button`
   }
 
   &:hover {
-    background: ${shade(0.2, '#a751b7')};
+    background: ${({ color }) => shade(0.2, color || '#a751b7')};
   }
 `;

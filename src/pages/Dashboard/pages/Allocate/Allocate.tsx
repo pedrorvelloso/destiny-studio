@@ -100,7 +100,14 @@ const Allocate: React.FC = () => {
                 incentiveId={item.id}
               />
             )}
-            {item.type === 'goal' && <ToGoal />}
+            {item.type === 'goal' && (
+              <ToGoal
+                donationAmount={donation?.amount || 0}
+                option={item.options[0]}
+                onAllocate={handleAllocate}
+                goal={item.goal as number}
+              />
+            )}
           </animated.div>
         ) : (
           <animated.div style={props} key={key}>

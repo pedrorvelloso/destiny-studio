@@ -10,13 +10,17 @@ export const Container = styled.div`
   position: relative;
 `;
 
-export const InnerBar = styled.div`
+interface InnerBarProps {
+  value?: number;
+}
+
+export const InnerBar = styled.div<InnerBarProps>`
   height: 100%;
-  width: 30%;
+  width: ${({ value }) => value || 0}%;
   background: #2e656a;
   border-radius: 8px;
 
-  transition: all 0.2s ease-in-out;
+  transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
 `;
 
 export const Label = styled.span`
