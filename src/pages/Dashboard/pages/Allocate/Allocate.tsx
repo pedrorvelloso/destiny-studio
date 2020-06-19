@@ -1,9 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useLocation, useParams, useHistory } from 'react-router-dom';
-import { FaAngleDown, FaTimes } from 'react-icons/fa';
+import { FaTimes, FaAngleRight } from 'react-icons/fa';
 import { useTransition, animated } from 'react-spring';
 
-import api from 'services/api';
+import destiny from 'services/destiny';
 
 import Game from 'models/Game';
 import Incentive from 'models/Incentive';
@@ -45,19 +45,19 @@ const Allocate: React.FC = () => {
   });
 
   const handleSelectedGameIncentives = useCallback(async (game: Game) => {
-    const { data } = await api.get(`/incentives/game/${game.id}`);
+    const { data } = await destiny.get(`/incentives/game/${game.id}`);
 
     setIncentives(data);
   }, []);
 
   const handleSearch = useCallback(async (inputValue: string) => {
-    const { data } = await api.get(`/games/search?input=${inputValue}`);
+    const { data } = await destiny.get(`/games/search?input=${inputValue}`);
 
     return data;
   }, []);
 
   const fetchPageInfo = useCallback(async () => {
-    const { data } = await api.get(`/donations/${id}`);
+    const { data } = await destiny.get(`/donations/${id}`);
 
     setDonation({ id: data.id, amount: data.amount });
     setLoading(false);
@@ -65,7 +65,7 @@ const Allocate: React.FC = () => {
 
   const handleAllocate = useCallback(
     async (incentiveId: number) => {
-      await api.patch(`/donations/${id}/allocate`, {
+      await destiny.patch(`/donations/${id}/allocate`, {
         incentive_option_id: incentiveId,
       });
 
@@ -111,22 +111,24 @@ const Allocate: React.FC = () => {
           </animated.div>
         ) : (
           <animated.div style={props} key={key}>
+            <h1 className="title">Pick an incentive</h1>
             <Autocomplete
               onSearch={handleSearch}
               onChange={(data: Game) => handleSelectedGameIncentives(data)}
+              placeholder="Search game..."
             />
 
             {incentives.map((incentive) => (
-              <IncentiveContainer key={incentive.id}>
+              <IncentiveContainer
+                key={incentive.id}
+                onClick={() => setSelectedIncentive(incentive)}
+              >
                 <IncentiveHeader>
                   <div>
                     <h3>{incentive.name}</h3>
                     <p>{incentive.description}</p>
                   </div>
-                  <FaAngleDown
-                    size={32}
-                    onClick={() => setSelectedIncentive(incentive)}
-                  />
+                  <FaAngleRight size={32} />
                 </IncentiveHeader>
               </IncentiveContainer>
             ))}

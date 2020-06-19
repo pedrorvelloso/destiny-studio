@@ -7,7 +7,7 @@ import Event from 'models/Event';
 
 import { useSocket } from 'modules/SocketManager';
 
-import api from 'services/api';
+import destiny from 'services/destiny';
 import { useAuth } from 'modules/AuthManager';
 
 import DonationBox from 'components/DonationBox';
@@ -28,21 +28,23 @@ const Home: React.FC = () => {
   const { user } = useAuth();
 
   const handleReview = useCallback(async (donationId) => {
-    const { data: donation } = await api.patch<Donation>(
+    const { data: donation } = await destiny.patch<Donation>(
       `/donations/${donationId}/review`,
     );
     dispatch({ type: 'reviewDonation', donation });
   }, []);
 
   const fetchDashboard = useCallback(async () => {
-    const { data: event } = await api.get<Event>('/events/active');
+    const { data: event } = await destiny.get<Event>('/events/active');
     dispatch({ type: 'activeEvent', event });
 
-    api.get<{ total: number }>(`/events/${event.id}/total`).then(({ data }) => {
-      dispatch({ type: 'total', total: data.total });
-    });
+    destiny
+      .get<{ total: number }>(`/events/${event.id}/total`)
+      .then(({ data }) => {
+        dispatch({ type: 'total', total: data.total });
+      });
 
-    api
+    destiny
       .get(`/events/${event.id}/donations`, {
         params: {
           limit: 5,
@@ -59,7 +61,7 @@ const Home: React.FC = () => {
   }, []);
 
   const loadMore = useCallback(async () => {
-    const { data } = await api.get(`/events/${activeEvent?.id}/donations`, {
+    const { data } = await destiny.get(`/events/${activeEvent?.id}/donations`, {
       params: {
         limit: 5,
         cursor,

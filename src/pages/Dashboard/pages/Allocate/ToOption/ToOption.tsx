@@ -6,7 +6,7 @@ import Button from 'components/Button';
 import SelectIncentiveButton from 'components/SelectIncentiveButton';
 import CreateInput from 'components/CreateInput';
 
-import api from 'services/api';
+import destiny from 'services/destiny';
 
 interface ToOptionProps {
   options: IncentiveOptions[];
@@ -30,7 +30,7 @@ const ToOption: React.FC<ToOptionProps> = ({
 
   const handleCreateOption = useCallback(
     async (id: number, optionValue: string) => {
-      const { data } = await api.post(`/incentives/${id}/options`, {
+      const { data } = await destiny.post(`/incentives/${id}/options`, {
         name: optionValue,
       });
       data.total = 0;

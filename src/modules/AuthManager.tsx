@@ -1,5 +1,5 @@
 import React from 'react';
-import api from 'services/api';
+import destiny from 'services/destiny';
 import { STORAGE } from 'utils/localStorage';
 
 interface AuthContextData {
@@ -33,11 +33,11 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   const signIn = React.useCallback(
     async (login: { email: string; password: string }) => {
-      const { data: response } = await api.post('/auth', login);
+      const { data: response } = await destiny.post('/auth', login);
       localStorage.setItem(STORAGE.JWT, response.token);
       localStorage.setItem(STORAGE.USER, JSON.stringify(response.user));
 
-      api.defaults.headers.authorization = `Bearer ${response.token}`;
+      destiny.defaults.headers.authorization = `Bearer ${response.token}`;
 
       setData({ token: response.token, user: response.user });
     },

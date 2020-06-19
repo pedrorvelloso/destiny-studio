@@ -9,9 +9,14 @@ import { Containers, OptionsContainer, Option } from './styles';
 interface AutocompleteProps {
   onSearch(inputValue: string): Promise<any[]>;
   onChange(option: any): void;
+  placeholder?: string;
 }
 
-const Autocomplete: React.FC<AutocompleteProps> = ({ onSearch, onChange }) => {
+const Autocomplete: React.FC<AutocompleteProps> = ({
+  onSearch,
+  onChange,
+  placeholder = 'Serach...',
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
@@ -45,7 +50,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({ onSearch, onChange }) => {
           return setOptions([]);
         }}
         autoComplete="off"
-        placeholder="Search..."
+        placeholder={placeholder}
         onFocus={() => setIsOpen(true)}
         onBlur={() => setIsOpen(false)}
         innerRef={inputRef}
