@@ -24,7 +24,7 @@ const Home: React.FC = () => {
     { donations, total, activeEvent, loadingActiveEvent, hasMore, cursor },
     dispatch,
   ] = useReducer(reducer, initialState);
-  const { socket } = useSocket();
+  const { subscribe } = useSocket();
   const { user } = useAuth();
 
   const handleReview = useCallback(async (donationId) => {
@@ -89,18 +89,27 @@ const Home: React.FC = () => {
   }, [fetchDashboard]);
 
   useEffect(() => {
-    socket.on(`total_donations:${activeEvent?.id}`, (data: number) => {
-      dispatch({ type: 'total', total: data });
-    });
-
-    socket.on(`new_donation:${activeEvent?.id}`, (data: Donation) => {
-      dispatch({ type: 'addDonation', donation: data });
-    });
-
-    socket.on(`new_reviewed_donation:${activeEvent?.id}`, (data: Donation) => {
-      dispatch({ type: 'reviewDonation', donation: data });
-    });
-  }, [activeEvent, socket]);
+    subscribe([
+      {
+        channel: `total_donations:${activeEvent?.id}`,
+        onMessage(data: number) {
+          dispatch({ type: 'total', total: data });
+        },
+      },
+      {
+        channel: `new_donation:${activeEvent?.id}`,
+        onMessage(data: Donation) {
+          dispatch({ type: 'addDonation', donation: data });
+        },
+      },
+      {
+        channel: `new_reviewed_donation:${activeEvent?.id}`,
+        onMessage(data: Donation) {
+          dispatch({ type: 'reviewDonation', donation: data });
+        },
+      },
+    ]);
+  }, [activeEvent, subscribe]);
 
   if (loadingActiveEvent && !activeEvent) return <FullScreenLoading />;
 

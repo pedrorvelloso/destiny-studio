@@ -1,8 +1,14 @@
 import React from 'react';
 import io from 'socket.io-client';
 
+interface SubscribeOption {
+  channel: string;
+  onMessage(data: unknown): void;
+}
+
 interface SocketContextData {
   socket: SocketIOClient.Socket;
+  subscribe(to: SubscribeOption[] | SubscribeOption): void;
 }
 
 const SocketContext = React.createContext<SocketContextData>(
@@ -30,8 +36,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
   }, [socket]);
 
+  const subscribe = React.useCallback(
+    (to: SubscribeOption[] | SubscribeOption) => {
+      if (Array.isArray(to)) {
+        to.forEach((event) => {
+          socket.on(event.channel, (data: unknown) => event.onMessage(data));
+        });
+      } else {
+        socket.on(to.channel, (data: unknown) => to.onMessage(data));
+      }
+    },
+    [socket],
+  );
+
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ socket, subscribe }}>
       {children}
     </SocketContext.Provider>
   );
