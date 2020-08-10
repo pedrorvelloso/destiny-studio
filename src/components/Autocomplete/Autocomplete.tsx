@@ -62,6 +62,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
               {options.map((option) => {
                 return (
                   <Option
+                    as="option"
                     key={option.id}
                     onClick={() => {
                       if (inputRef.current)

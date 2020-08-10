@@ -24,7 +24,7 @@ const Home: React.FC = () => {
     { donations, total, activeEvent, loadingActiveEvent, hasMore, cursor },
     dispatch,
   ] = useReducer(reducer, initialState);
-  const { subscribe } = useSocket();
+  const { subscribe, unsubscribe } = useSocket();
   const { user } = useAuth();
 
   const handleReview = useCallback(async (donationId) => {
@@ -109,7 +109,14 @@ const Home: React.FC = () => {
         },
       },
     ]);
-  }, [activeEvent, subscribe]);
+    return () => {
+      unsubscribe([
+        `total_donations:${activeEvent?.id}`,
+        `new_donation:${activeEvent?.id}`,
+        `new_reviewed_donation:${activeEvent?.id}`,
+      ]);
+    };
+  }, [activeEvent, subscribe, unsubscribe]);
 
   if (loadingActiveEvent && !activeEvent) return <FullScreenLoading />;
 

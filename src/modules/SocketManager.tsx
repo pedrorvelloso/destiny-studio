@@ -9,6 +9,7 @@ interface SubscribeOption {
 interface SocketContextData {
   socket: SocketIOClient.Socket;
   subscribe(to: SubscribeOption[] | SubscribeOption): void;
+  unsubscribe(from: string[] | string): void;
 }
 
 const SocketContext = React.createContext<SocketContextData>(
@@ -49,8 +50,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     [socket],
   );
 
+  const unsubscribe = React.useCallback(
+    (from: string[] | string) => {
+      if (Array.isArray(from)) {
+        from.forEach((channel) => {
+          socket.off(channel);
+        });
+      } else {
+        socket.off(from);
+      }
+    },
+    [socket],
+  );
+
   return (
-    <SocketContext.Provider value={{ socket, subscribe }}>
+    <SocketContext.Provider value={{ socket, subscribe, unsubscribe }}>
       {children}
     </SocketContext.Provider>
   );
