@@ -26,13 +26,22 @@ const DestinyManager: React.FC = ({ children }) => {
     destiny.interceptors.response.use(
       (response) => response,
       (error: DestinyError) => {
-        if (error.response.status === 401) {
-          signOut();
-          history.push('/login');
-          addToast({
-            title: 'You must be logged in to perform this action',
-            type: 'warn',
-          });
+        switch (error.response.status) {
+          case 401:
+            signOut();
+            history.push('/login');
+            addToast({
+              title: 'You must be logged in to perform this action',
+              type: 'warn',
+            });
+            break;
+          default:
+            signOut();
+            history.push('/');
+            addToast({
+              title: 'Something went wrong, sorry about that',
+              type: 'error',
+            });
         }
 
         return Promise.reject(error);
