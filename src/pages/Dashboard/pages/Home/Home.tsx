@@ -24,7 +24,7 @@ const Home: React.FC = () => {
     { donations, total, activeEvent, loadingActiveEvent, hasMore, cursor },
     dispatch,
   ] = useReducer(reducer, initialState);
-  const { subscribe, unsubscribe } = useSocket();
+  const { subscribe } = useSocket();
   const { user } = useAuth();
 
   const handleReview = useCallback(async (donationId) => {
@@ -89,34 +89,35 @@ const Home: React.FC = () => {
   }, [fetchDashboard]);
 
   useEffect(() => {
-    subscribe([
-      {
-        channel: `total_donations:${activeEvent?.id}`,
-        onMessage(data: number) {
-          dispatch({ type: 'total', total: data });
+    const { unsubscribe } = subscribe(
+      [
+        {
+          channel: `total_donations:${activeEvent?.id}`,
+          onMessage(data: number) {
+            dispatch({ type: 'total', total: data });
+          },
         },
-      },
-      {
-        channel: `new_donation:${activeEvent?.id}`,
-        onMessage(data: Donation) {
-          dispatch({ type: 'addDonation', donation: data });
+        {
+          channel: `new_donation:${activeEvent?.id}`,
+          onMessage(data: Donation) {
+            dispatch({ type: 'addDonation', donation: data });
+          },
         },
-      },
-      {
-        channel: `new_reviewed_donation:${activeEvent?.id}`,
-        onMessage(data: Donation) {
-          dispatch({ type: 'reviewDonation', donation: data });
+        {
+          channel: `new_reviewed_donation:${activeEvent?.id}`,
+          onMessage(data: Donation) {
+            dispatch({ type: 'reviewDonation', donation: data });
+          },
         },
+      ],
+      {
+        skip: !activeEvent,
       },
-    ]);
+    );
     return () => {
-      unsubscribe([
-        `total_donations:${activeEvent?.id}`,
-        `new_donation:${activeEvent?.id}`,
-        `new_reviewed_donation:${activeEvent?.id}`,
-      ]);
+      unsubscribe();
     };
-  }, [activeEvent, subscribe, unsubscribe]);
+  }, [activeEvent, subscribe]);
 
   if (loadingActiveEvent && !activeEvent) return <FullScreenLoading />;
 

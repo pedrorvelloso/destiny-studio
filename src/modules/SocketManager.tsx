@@ -1,14 +1,23 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-interface SubscribeOption {
+interface SubscriptionOption {
   channel: string;
   onMessage(data: unknown): void;
 }
 
+interface SubscribeOption {
+  skip?: boolean;
+}
+
 interface SocketContextData {
   socket: SocketIOClient.Socket;
-  subscribe(to: SubscribeOption[] | SubscribeOption): void;
+  subscribe(
+    to: SubscriptionOption[] | SubscriptionOption,
+    options?: SubscribeOption,
+  ): {
+    unsubscribe(): void;
+  };
   unsubscribe(from: string[] | string): void;
 }
 
@@ -37,19 +46,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
     };
   }, [socket]);
 
-  const subscribe = React.useCallback(
-    (to: SubscribeOption[] | SubscribeOption) => {
-      if (Array.isArray(to)) {
-        to.forEach((event) => {
-          socket.on(event.channel, (data: unknown) => event.onMessage(data));
-        });
-      } else {
-        socket.on(to.channel, (data: unknown) => to.onMessage(data));
-      }
-    },
-    [socket],
-  );
-
   const unsubscribe = React.useCallback(
     (from: string[] | string) => {
       if (Array.isArray(from)) {
@@ -61,6 +57,40 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
     },
     [socket],
+  );
+
+  const subscribe = React.useCallback(
+    (
+      to: SubscriptionOption[] | SubscriptionOption,
+      options?: SubscribeOption,
+    ) => {
+      let channels: string | string[];
+
+      if (!options?.skip) {
+        if (Array.isArray(to)) {
+          const manyChannels: string[] = [];
+
+          to.forEach((event) => {
+            socket.on(event.channel, (data: unknown) => event.onMessage(data));
+            manyChannels.push(event.channel);
+          });
+
+          channels = manyChannels;
+        } else {
+          socket.on(to.channel, (data: unknown) => to.onMessage(data));
+
+          channels = to.channel;
+        }
+      }
+
+      return {
+        unsubscribe: () => {
+          if (options?.skip) return;
+          unsubscribe(channels);
+        },
+      };
+    },
+    [socket, unsubscribe],
   );
 
   return (
