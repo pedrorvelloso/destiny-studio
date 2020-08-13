@@ -60,10 +60,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   );
 
   const subscribe = React.useCallback(
-    (
-      to: EventOption[] | EventOption,
-      options?: SubscribeOptions,
-    ) => {
+    (to: EventOption[] | EventOption, options?: SubscribeOptions) => {
       let channels: string | string[];
 
       if (!options?.skip) {
