@@ -1,20 +1,20 @@
 import React from 'react';
 import io from 'socket.io-client';
 
-interface SubscriptionOption {
+interface EventOption {
   channel: string;
   onMessage(data: unknown): void;
 }
 
-interface SubscribeOption {
+interface SubscribeOptions {
   skip?: boolean;
 }
 
 interface SocketContextData {
   socket: SocketIOClient.Socket;
   subscribe(
-    to: SubscriptionOption[] | SubscriptionOption,
-    options?: SubscribeOption,
+    to: EventOption[] | EventOption,
+    options?: SubscribeOptions,
   ): {
     unsubscribe(): void;
   };
@@ -61,8 +61,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
 
   const subscribe = React.useCallback(
     (
-      to: SubscriptionOption[] | SubscriptionOption,
-      options?: SubscribeOption,
+      to: EventOption[] | EventOption,
+      options?: SubscribeOptions,
     ) => {
       let channels: string | string[];
 
