@@ -1,6 +1,8 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+
 import Header from 'components/Header';
+import PrivateRoute from 'routes/PrivateRoute';
 
 import { Container } from './styles';
 import Home from './pages/Home';
@@ -14,9 +16,7 @@ const Dashboard: React.FC = () => {
         <Route exact path="/">
           <Home />
         </Route>
-        <Route exact path="/allocate/:id">
-          <Allocate />
-        </Route>
+        <PrivateRoute exact path="/allocate/:id" component={Allocate} />
       </Switch>
     </Container>
   );

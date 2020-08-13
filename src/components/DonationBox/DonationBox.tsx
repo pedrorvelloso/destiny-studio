@@ -5,6 +5,8 @@ import { FaCheckCircle } from 'react-icons/fa';
 import { formatDistance } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
+import { useAuth } from 'modules/AuthManager';
+
 import LoadingIndicator from 'components/LoadingIndicator';
 
 import {
@@ -40,6 +42,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
   onReview,
 }) => {
   const [isReviewing, setIsReviewing] = useState(false);
+  const { user } = useAuth();
 
   const tz = useMemo(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -69,12 +72,14 @@ const DonationBox: React.FC<DonationBoxProps> = ({
             <p>{message}</p>
           </Donation>
           <DonationValue>R$ {amount}</DonationValue>
-          <Link
-            to={{
-              pathname: `/allocate/${id}`,
-              state: { amount },
-            }}
-          />
+          {user && (
+            <Link
+              to={{
+                pathname: `/allocate/${id}`,
+                state: { amount },
+              }}
+            />
+          )}
         </DonationContainer>
         <StatusBar reviewed={!!reviewer}>
           {!reviewer && (
