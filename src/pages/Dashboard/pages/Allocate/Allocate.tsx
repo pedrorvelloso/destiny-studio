@@ -17,15 +17,21 @@ import ToOption from './ToOption';
 import ToGoal from './ToGoal';
 
 const Allocate: React.FC = () => {
-  const location = useLocation<{ amount: number }>();
+  const location = useLocation<{ amount: number; incentive?: number }>();
   const history = useHistory();
   const { id } = useParams();
 
   const [donation, setDonation] = useState<{
     id: number;
     amount: number;
+    incentive?: number;
   } | null>(() => {
-    if (location.state) return { id, amount: location.state.amount };
+    if (location.state)
+      return {
+        id,
+        amount: location.state.amount,
+        incentive: location.state.incentive,
+      };
 
     return null;
   });
@@ -98,6 +104,7 @@ const Allocate: React.FC = () => {
                 canCreate={item.enable_option}
                 onAllocate={handleAllocate}
                 incentiveId={item.id}
+                allocatedTo={donation?.incentive}
               />
             )}
             {item.type === 'goal' && (
@@ -106,6 +113,7 @@ const Allocate: React.FC = () => {
                 option={item.options[0]}
                 onAllocate={handleAllocate}
                 goal={item.goal as number}
+                allocatedTo={donation?.incentive}
               />
             )}
           </animated.div>

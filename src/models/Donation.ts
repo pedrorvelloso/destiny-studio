@@ -4,6 +4,7 @@ export default interface Donation {
   from: string;
   message: string;
   created_at: string;
+  donation_incentive?: number;
   reviewer?: {
     name: string;
   };

@@ -158,6 +158,7 @@ const Home: React.FC = () => {
               reviewer={item.reviewer?.name}
               createdAt={item.created_at}
               id={item.id}
+              incentive={item.donation_incentive}
               onReview={() => handleReview(item.id)}
               canReview={!!user}
             />

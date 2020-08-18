@@ -20,6 +20,7 @@ import {
 
 interface DonationBoxProps {
   id: number;
+  incentive?: number;
   from: string;
   message: string;
   amount: number;
@@ -32,6 +33,7 @@ interface DonationBoxProps {
 
 const DonationBox: React.FC<DonationBoxProps> = ({
   id,
+  incentive,
   from,
   message,
   amount,
@@ -76,7 +78,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
             <Link
               to={{
                 pathname: `/allocate/${id}`,
-                state: { amount },
+                state: { amount, incentive },
               }}
             />
           )}

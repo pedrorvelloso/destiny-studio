@@ -12,6 +12,7 @@ interface ToGoalProps {
   donationAmount: number;
   onAllocate(id: number): void;
   goal: number;
+  allocatedTo?: number;
 }
 
 const ToGoal: React.FC<ToGoalProps> = ({
@@ -19,6 +20,7 @@ const ToGoal: React.FC<ToGoalProps> = ({
   donationAmount,
   onAllocate,
   goal,
+  allocatedTo,
 }) => {
   const [totalDonation, setTotalDonation] = useState(option.total);
   const [wantToAllocate, setWantToAllocate] = useState(false);
@@ -28,20 +30,29 @@ const ToGoal: React.FC<ToGoalProps> = ({
     setTotalDonation((prevTotal) => prevTotal + amount);
   }, []);
 
+  const RenderAllocateButtons: React.FC = () => {
+    if (wantToAllocate)
+      return (
+        <Button color="yellow" onClick={() => onAllocate(option.id)}>
+          Click to confirm
+        </Button>
+      );
+
+    if (allocatedTo === option.id)
+      return <Button disabled>Allocated to this incentive</Button>;
+
+    return (
+      <Button onClick={() => handleWantToAllocate(donationAmount)}>
+        Allocate
+      </Button>
+    );
+  };
+
   return (
     <Container>
       <ProgressBar value={totalDonation} total={goal} />
 
-      {wantToAllocate && (
-        <Button color="yellow" onClick={() => onAllocate(option.id)}>
-          Click to confirm
-        </Button>
-      )}
-      {!wantToAllocate && (
-        <Button onClick={() => handleWantToAllocate(donationAmount)}>
-          Allocate
-        </Button>
-      )}
+      <RenderAllocateButtons />
     </Container>
   );
 };

@@ -14,6 +14,7 @@ interface ToOptionProps {
   canCreate: boolean;
   onAllocate(id: number): void;
   incentiveId: number;
+  allocatedTo?: number;
 }
 
 const ToOption: React.FC<ToOptionProps> = ({
@@ -22,6 +23,7 @@ const ToOption: React.FC<ToOptionProps> = ({
   onAllocate,
   canCreate,
   incentiveId,
+  allocatedTo,
 }) => {
   const [selectedOption, setSelectedOption] = useState<IncentiveOptions | null>(
     null,
@@ -46,7 +48,10 @@ const ToOption: React.FC<ToOptionProps> = ({
         <SelectIncentiveButton
           key={option.id}
           label={option.name}
-          checked={selectedOption?.id === option.id}
+          checked={
+            allocatedTo === option.id || selectedOption?.id === option.id
+          }
+          allocated={allocatedTo === option.id}
           onClick={() => setSelectedOption(option)}
           total={option.total}
           donationAmount={donationAmount}

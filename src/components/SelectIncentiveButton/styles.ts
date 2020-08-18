@@ -1,14 +1,27 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface ContainerProps {
   checked: boolean;
+  allocated: boolean;
 }
 
 export const Container = styled.div<ContainerProps>`
   border: 2px solid ${({ checked }) => (checked ? '#2e656a' : '#a751b7')};
   padding: 16px;
 
-  background: ${({ checked }) => (checked ? '#2e656a' : 'transparent')};
+  ${({ checked, allocated }) => {
+    if (allocated)
+      return css`
+        background: #a751b7;
+      `;
+    if (checked)
+      return css`
+        background: #2e656a;
+      `;
+    return css`
+      background: transparent;
+    `;
+  }};
 
   cursor: pointer;
   user-select: none;

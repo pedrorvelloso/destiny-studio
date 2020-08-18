@@ -10,6 +10,7 @@ interface SelectIncentiveButtonProps {
   onClick: () => void;
   total: number;
   donationAmount: number;
+  allocated: boolean;
 }
 
 const SelectIncentiveButton: React.FC<SelectIncentiveButtonProps> = ({
@@ -18,16 +19,23 @@ const SelectIncentiveButton: React.FC<SelectIncentiveButtonProps> = ({
   onClick,
   total,
   donationAmount,
+  allocated,
 }) => {
   const [totalIncentive, setTotalIncentive] = useState(total);
 
   useEffect(() => {
-    if (checked) setTotalIncentive(total + donationAmount);
+    if (checked && !allocated) setTotalIncentive(total + donationAmount);
     else setTotalIncentive(total);
-  }, [checked, donationAmount, total]);
+  }, [allocated, checked, donationAmount, total]);
 
   return (
-    <Container checked={checked} onClick={onClick}>
+    <Container
+      checked={checked}
+      allocated={allocated}
+      onClick={() => {
+        if (!allocated) onClick();
+      }}
+    >
       <p>{label}</p>
       <span>
         R${' '}
