@@ -6,7 +6,7 @@ import { ToastProvider } from './ToastManager';
 
 const AppProviders: React.FC = ({ children }) => {
   return (
-    <SocketProvider host="http://localhost:3333">
+    <SocketProvider host={`http://${process.env.REACT_APP_API}:3333`}>
       <AuthProvider>
         <ToastProvider>{children}</ToastProvider>
       </AuthProvider>
