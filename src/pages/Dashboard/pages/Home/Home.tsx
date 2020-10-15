@@ -100,7 +100,11 @@ const Home: React.FC = () => {
         {
           channel: `new_donation:${activeEvent?.id}`,
           onMessage(data: Donation) {
-            dispatch({ type: 'addDonation', donation: data });
+            // workaround for brat
+            // fix ws emitter @destiny
+            const donation = data;
+            donation.amount = parseFloat(String(data.amount));
+            dispatch({ type: 'addDonation', donation });
           },
         },
         {

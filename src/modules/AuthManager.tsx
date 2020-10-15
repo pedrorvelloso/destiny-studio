@@ -37,7 +37,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       localStorage.setItem(STORAGE.JWT, response.token);
       localStorage.setItem(STORAGE.USER, JSON.stringify(response.user));
 
-      destiny.defaults.headers.authorization = `Bearer ${response.token}`;
+      destiny.defaults.headers.Authorization = `Bearer ${response.token}`;
 
       setData({ token: response.token, user: response.user });
     },
@@ -47,6 +47,8 @@ export const AuthProvider: React.FC = ({ children }) => {
   const signOut = React.useCallback(() => {
     localStorage.removeItem(STORAGE.JWT);
     localStorage.removeItem(STORAGE.USER);
+
+    delete destiny.defaults.headers.Authorization;
 
     setData({} as AuthState);
   }, []);
