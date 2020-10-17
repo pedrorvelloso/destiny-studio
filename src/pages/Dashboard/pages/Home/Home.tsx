@@ -16,6 +16,7 @@ import AnimatedValue from 'components/AnimatedValue';
 import FullScreenLoading from 'components/FullScreenLoading';
 import LoadingIndicator from 'components/LoadingIndicator';
 
+import { currency } from 'utils/currency';
 import { initialState, reducer } from './state';
 import { DonationsList, Boxes, EventInfo } from './styles';
 
@@ -100,11 +101,7 @@ const Home: React.FC = () => {
         {
           channel: `new_donation:${activeEvent?.id}`,
           onMessage(data: Donation) {
-            // workaround for brat
-            // fix ws emitter @destiny
-            const donation = data;
-            donation.amount = parseFloat(String(data.amount));
-            dispatch({ type: 'addDonation', donation });
+            dispatch({ type: 'addDonation', donation: data });
           },
         },
         {
@@ -135,7 +132,7 @@ const Home: React.FC = () => {
       </EventInfo>
       <Boxes>
         <SimpleBox title="TOTAL" color="primary">
-          R$ <AnimatedValue value={total} formatValue={(n) => n.toFixed(2)} />
+          <AnimatedValue value={total} formatValue={(n) => currency(n)} />
         </SimpleBox>
         <SimpleBox title="NUM. DONATIONS" color="info">
           --

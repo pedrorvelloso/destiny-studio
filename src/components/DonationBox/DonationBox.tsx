@@ -5,6 +5,7 @@ import { FaCheckCircle } from 'react-icons/fa';
 import { formatDistance } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
 
+import { currency } from 'utils/currency';
 import { useAuth } from 'modules/AuthManager';
 
 import LoadingIndicator from 'components/LoadingIndicator';
@@ -31,6 +32,10 @@ interface DonationBoxProps {
   style: Record<string, unknown>;
 }
 
+/**  @TODO
+ * this is dealing only with BRL currency
+ * should fix to handle various currencies
+ */
 const DonationBox: React.FC<DonationBoxProps> = ({
   id,
   incentive,
@@ -73,7 +78,7 @@ const DonationBox: React.FC<DonationBoxProps> = ({
             </h5>
             <p>{message}</p>
           </Donation>
-          <DonationValue>R$ {amount}</DonationValue>
+          <DonationValue>{currency(amount)}</DonationValue>
           {user && (
             <Link
               to={{

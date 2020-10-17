@@ -36,7 +36,6 @@ const DestinyManager: React.FC = ({ children }) => {
             });
             break;
           default:
-            signOut();
             history.push('/');
             addToast({
               title: 'Something went wrong, sorry about that',
